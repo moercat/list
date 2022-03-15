@@ -194,66 +194,58 @@ func (d List) Sum() int {
 	return total
 }
 
-func In(fat, sub interface{}) bool {
-	_, ok := InI(fat, sub)
+func (d List) In(sub interface{}) bool {
+	_, ok := inI(d.value, sub)
 	return ok
 }
 
-func Index(fat, idx interface{}) int {
-	index, _ := InI(fat, idx)
+func (d List) Index(sub interface{}) int {
+	index, _ := inI(d.value, sub)
 	return index
 }
 
-func Extend(fat, sub interface{}) interface{} {
-	fats := cast.ToStringSlice(fat)
+func (d List) Extend(sub interface{}) {
+
 	subs := cast.ToStringSlice(sub)
+	*d.value = append(*d.value, subs...)
 
-	fats = append(fats, subs...)
-
-	return fats
 }
 
-func Pop(fat interface{}, idx int) interface{} {
-	fats := cast.ToStringSlice(fat)
+func (d List) Pop(idx int) {
+	fats := *d.value
 	if idx < 0 {
-		idx = len(fats) + idx
+		idx = d.length + idx
 	}
-
-	return append(fats[:idx], fats[(idx+1):]...)
+	*d.value = append(fats[:idx], fats[(idx+1):]...)
 }
 
-func Remove(fat interface{}, value interface{}) interface{} {
-	fats := cast.ToStringSlice(fat)
+func (d List) Remove(value interface{}) {
+	fats := *d.value
 	str := cast.ToString(value)
 	for i, v := range fats {
 		if v == str {
-			fat = append(fats[:i], fats[(i+1):]...)
+			*d.value = append(fats[:i], fats[(i+1):]...)
 		}
-
 	}
-
-	return fat
 }
 
-func Append(fat interface{}, value interface{}) interface{} {
-	fats := cast.ToStringSlice(fat)
+func (d List) Append(value interface{}) {
+	fats := *d.value
 	str := cast.ToString(value)
-
-	return append(fats, str)
+	*d.value = append(fats, str)
 }
 
-func Insert(fat interface{}, idx int, value interface{}) interface{} {
-	fats := cast.ToStringSlice(fat)
+func (d List) Insert(idx int, value interface{}) {
+	fats := *d.value
 	str := cast.ToString(value)
 
 	res := append(fats[:idx], str)
-	fat = append(res, fats[idx:]...)
+	*d.value = append(res, fats[idx:]...)
 
-	return append(res, fats[idx:]...)
 }
 
-func Count(fat interface{}, value interface{}) (count int) {
-	fats := cast.ToStringSlice(fat)
+func (d List) Count(value interface{}) (count int) {
+	fats := *d.value
 	str := cast.ToString(value)
 
 	for _, v := range fats {
@@ -262,32 +254,17 @@ func Count(fat interface{}, value interface{}) (count int) {
 		}
 	}
 
-	return count
+	return
 }
 
-func InI(fat interface{}, sub interface{}) (int, bool) {
-	fats := cast.ToStringSlice(fat)
+func inI(fat *[]string, sub interface{}) (int, bool) {
 	s := cast.ToString(sub)
 
-	for i, v := range fats {
+	for i, v := range *fat {
 		if v == s {
 			return i, true
 		}
 	}
 
 	return -1, false
-}
-
-func Equal(fat, sub interface{}) bool {
-	s1 := cast.ToStringSlice(fat)
-	s2 := cast.ToStringSlice(sub)
-	if len(s1) != len(s2) {
-		return false
-	}
-	for i, n := range s1 {
-		if n != s2[i] {
-			return false
-		}
-	}
-	return true
 }
