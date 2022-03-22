@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"github.com/spf13/cast"
 	"sort"
+	"strings"
 )
 
 // 	包 list 用来解决 go 中 slice 切片函数操作方法过少的问题.
@@ -44,14 +45,6 @@ func (d List) Copy() List {
 func NewStrSlice(va interface{}) *[]string {
 	val := cast.ToStringSlice(va)
 	return &val
-}
-
-// New returns a new fixed-point decimal, value * 10 ^ length.
-func New(value int64, length int) List {
-	return List{
-		value:  NewStrSlice(value),
-		length: length,
-	}
 }
 
 // Abs returns the absolute value of the string slice.
@@ -123,31 +116,31 @@ func (d List) Equal(d2 List) bool {
 	return true
 }
 
-// Equals is deprecated, please use Equal method instead
-func (d List) Equals(d2 List) bool {
-	return d.Equal(d2)
-}
-
 // Length returns the length
 func (d List) Length() int {
 	return d.length
 }
 
-// Int returns the coefficient of the decimal as int64. It is scaled by 10^Exponent()
-func (d List) Int() []int {
+// IntSlice returns IntSlice
+func (d List) IntSlice() []int {
 	d.ensureInitialized()
 	dValue := *d.value
 	return cast.ToIntSlice(dValue)
 }
 
-func (d List) Bool() []bool {
+func (d List) BoolSlice() []bool {
 	dValue := *d.value
 	return cast.ToBoolSlice(dValue)
 }
 
-// String returns the string representation of the decimal
-func (d List) String() []string {
+func (d List) StringSlice() []string {
 	return d.string()
+}
+
+// String 修改输出结果为数组形式
+func (d List) String() string {
+	v := *d.value
+	return "[" + strings.Join(v, " ") + "]"
 }
 
 // Value implements the driver.Valuer interface for database serialization.
