@@ -45,7 +45,11 @@ func (d List) Min() int {
 	d3 := cast.ToIntSlice(d2)
 	sort.Ints(d3)
 
-	return d3[0]
+	if d.length > 0 {
+		return d3[0]
+	}
+
+	return -1
 }
 
 func (d List) Max() int {
@@ -54,7 +58,11 @@ func (d List) Max() int {
 	d3 := cast.ToIntSlice(d2)
 	sort.Ints(d3)
 
-	return d3[len(d3)-1]
+	if d.length > 0 {
+		return d3[len(d3)-1]
+	}
+
+	return -1
 }
 
 func (d List) Sum() int {
@@ -87,7 +95,6 @@ func (d List) Set() List {
 }
 
 func (d List) Abs() List {
-	d.ensureInitialized()
 	d2Value := make([]string, 0, len(*d.value))
 	for _, v := range *d.value {
 		if val := cast.ToInt(v); val < 0 {
@@ -104,7 +111,6 @@ func (d List) Abs() List {
 }
 
 func (d List) Copy() List {
-	d.ensureInitialized()
 	return List{
 		value:  &(*d.value),
 		length: d.length,
@@ -218,7 +224,6 @@ func (d List) Length() int {
 }
 
 func (d List) IntSlice() []int {
-	d.ensureInitialized()
 	dValue := *d.value
 	return cast.ToIntSlice(dValue)
 }
