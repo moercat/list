@@ -117,19 +117,25 @@ func (d List) Copy() List {
 	}
 }
 
-func (d List) Pop(idx int) {
+func (d List) Pop(idx int) List {
 	fats := *d.value
 	if idx < 0 {
 		idx = d.length + idx
 	}
+	if idx > d.length {
+		return d
+	}
+
 	*d.value = append(fats[:idx], fats[(idx+1):]...)
+	return d
 }
 
-func (d List) Extend(sub interface{}) {
+func (d List) Extend(sub interface{}) List {
 
 	subs := cast.ToStringSlice(sub)
 	*d.value = append(*d.value, subs...)
 
+	return d
 }
 
 func (d List) Dup(d2 interface{}) List {
@@ -160,7 +166,7 @@ func (d List) In(sub interface{}) bool {
 	return ok
 }
 
-func (d List) Remove(value interface{}) {
+func (d List) Remove(value interface{}) List {
 	fats := *d.value
 	str := cast.ToString(value)
 	for i, v := range fats {
@@ -168,12 +174,15 @@ func (d List) Remove(value interface{}) {
 			*d.value = append(fats[:i], fats[(i+1):]...)
 		}
 	}
+
+	return d
 }
 
-func (d List) Append(value interface{}) {
+func (d List) Append(value interface{}) List {
 	fats := *d.value
 	str := cast.ToString(value)
 	*d.value = append(fats, str)
+	return d
 }
 
 func (d List) Equal(d2 interface{}) bool {
@@ -196,13 +205,18 @@ func (d List) Index(sub interface{}) int {
 	return index
 }
 
-func (d List) Insert(idx int, value interface{}) {
+func (d List) Insert(idx int, value interface{}) List {
 	fats := *d.value
 	str := cast.ToString(value)
+
+	if idx > d.length {
+		return d
+	}
 
 	res := append(fats[:idx], str)
 	*d.value = append(res, fats[idx:]...)
 
+	return d
 }
 
 func (d List) Count(value interface{}) (count int) {
